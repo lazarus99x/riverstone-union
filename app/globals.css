@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+/* ── StateBank Design Token System ─────────────────────────── */
+@theme inline {
+  /* ── Fonts ────────────────────────────────────────────────── */
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display), var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, "Cascadia Code", monospace;
+
+  /* ── Core Brand Colors ───────────────────────────────────── */
+  --color-primary: #0066FF;
+  --color-primary-dark: #0052CC;
+  --color-primary-light: #3384FF;
+  --color-accent-gold: #F5A623;
+  --color-accent-gold-dark: #D4900F;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+  --color-destructive: #EF4444;
+  --color-accent: #1A2236;
+
+  /* ── Background Palette ──────────────────────────────────── */
+  --color-bg-base: #0B0F1A;
+  --color-bg-surface: #111827;
+  --color-bg-elevated: #1A2236;
+  --color-bg-card: #141B2D;
+  --color-bg-input: #0F1520;
+
+  /* ── Text Palette ────────────────────────────────────────── */
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+
+  /* ── Border Palette ──────────────────────────────────────── */
+  --color-border: #1E293B;
+  --color-border-default: #1E293B;
+  --color-border-muted: #1E293B80;
+  --color-border-active: #0066FF66;
+
+  /* ── Shadows ─────────────────────────────────────────────── */
+  --shadow-glow-primary: 0 0 120px 40px rgba(0, 102, 255, 0.06);
+  --shadow-glow-gold: 0 0 120px 40px rgba(245, 166, 35, 0.04);
+
+  /* ── shadcn compat layer ─────────────────────────────────── */
+  --color-background: var(--color-bg-base);
+  --color-foreground: var(--color-text-primary);
+  --color-card: var(--color-bg-card);
+  --color-card-foreground: var(--color-text-primary);
+  --color-popover: var(--color-bg-elevated);
+  --color-popover-foreground: var(--color-text-primary);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-bg-surface);
+  --color-secondary-foreground: var(--color-text-primary);
+  --color-muted: var(--color-bg-input);
+  --color-muted-foreground: var(--color-text-muted);
+  --color-accent-foreground: var(--color-text-primary);
+  --color-destructive-foreground: #ffffff;
+  --color-input: var(--color-border);
+  --color-ring: var(--color-primary);
+  --radius: 0.625rem;
+}
+
+/* ── Base Styles ───────────────────────────────────────────── */
+@layer base {
+  * {
+    border-color: var(--color-border-default);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+
+  ::selection {
+    background: rgba(0, 102, 255, 0.3);
+    color: #fff;
+  }
+}
+
+/* ── Custom Utility Classes ────────────────────────────────── */
+@layer utilities {
+  /* Glassmorphism panels */
+  .glass-light {
+    background: rgba(11, 15, 26, 0.72);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  }
+
+  .glass-dark {
+    background: rgba(11, 15, 26, 0.88);
+    backdrop-filter: blur(24px) saturate(1.6);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  }
+
+  /* Radial glow backgrounds */
+  .bg-glow-primary {
+    background: radial-gradient(
+      ellipse 60% 50% at 50% 40%,
+      rgba(0, 102, 255, 0.08) 0%,
+      transparent 70%
+    );
+  }
+
+  .bg-glow-gold {
+    background: radial-gradient(
+      ellipse 50% 40% at 60% 50%,
+      rgba(245, 166, 35, 0.06) 0%,
+      transparent 70%
+    );
+  }
+
+  /* Floating shape blob */
+  .floating-shape {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    animation: float 20s ease-in-out infinite alternate;
+  }
+
+  /* Scrollbar */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--color-border-default);
+    border-radius: 9999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-muted);
+  }
+}
+
+/* ── Animations ────────────────────────────────────────────── */
+@keyframes float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+  66% {
+    transform: translate(-20px, 15px) scale(0.95);
+  }
+  100% {
+    transform: translate(10px, -10px) scale(1.02);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
