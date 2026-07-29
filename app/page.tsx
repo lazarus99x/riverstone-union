@@ -177,7 +177,7 @@ export default function LandingPage() {
               <Building2 className="h-5 w-5 text-white" />
             </div>
             <span className="font-display text-xl font-bold tracking-tight text-text-primary">
-              State<span className="text-primary">Bank</span>
+              River<span className="text-primary">Stone</span>Union
             </span>
           </Link>
 
@@ -611,7 +611,7 @@ export default function LandingPage() {
                   <Building2 className="h-4 w-4 text-white" />
                 </div>
                 <span className="font-display text-lg font-bold tracking-tight text-text-primary">
-                  State<span className="text-primary">Bank</span>
+                  River<span className="text-primary">Stone</span>Union
                 </span>
               </div>
               <p className="text-sm leading-relaxed text-text-muted">
