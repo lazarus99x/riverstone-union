@@ -1,5 +1,5 @@
 -- ============================================================================
--- StateBank Seed Data
+-- RiverStoneUnion Seed Data
 -- File: 004_seed.sql
 -- Description: Populates the database with initial seed data for development
 --              and testing. Creates a test admin user (requires an existing
@@ -26,12 +26,12 @@
 INSERT INTO app_settings (key, value, description) VALUES
 (
     'bank.name',
-    '"StateBank"',
+    '"RiverStoneUnion"',
     'Official bank name displayed on statements and UI'
 ),
 (
     'bank.support_email',
-    '"support@statebank.com"',
+    '"support@riverstoneunion.com"',
     'Customer support email address'
 ),
 (
@@ -132,7 +132,7 @@ ON CONFLICT (key) DO UPDATE
 -- ----------------------------------------------------------------------------
 -- Seed: Test Admin User
 -- Before running this section, create a test user in Supabase Auth:
---   Email: admin@statebank.com
+--   Email: admin@riverstoneunion.com
 --   Password: (set via Auth UI)
 -- Then replace the user_id below with the actual auth.users UID.
 -- ----------------------------------------------------------------------------
@@ -144,8 +144,8 @@ ON CONFLICT (key) DO UPDATE
 INSERT INTO profiles (user_id, email, full_name, phone, kyc_status)
 VALUES (
     '00000000-0000-0000-0000-000000000000',  -- <-- REPLACE THIS with actual auth.users UID
-    'admin@statebank.com',
-    'StateBank Admin',
+    'admin@riverstoneunion.com',
+    'RiverStoneUnion Admin',
     '+1-555-0100',
     'verified'
 ) ON CONFLICT (user_id) DO NOTHING;
@@ -165,7 +165,7 @@ SELECT
         "can_manage_admins": true
     }'::JSONB
 FROM profiles
-WHERE email = 'admin@statebank.com'
+WHERE email = 'admin@riverstoneunion.com'
 ON CONFLICT (user_id) DO NOTHING;
 */
 
@@ -177,7 +177,7 @@ ON CONFLICT (user_id) DO NOTHING;
 INSERT INTO profiles (user_id, email, full_name, phone, kyc_status)
 VALUES (
     '00000000-0000-0000-0000-000000000001',  -- <-- REPLACE THIS
-    'user@statebank.com',
+    'user@riverstoneunion.com',
     'John Doe',
     '+1-555-0101',
     'verified'

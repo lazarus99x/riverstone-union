@@ -1,7 +1,7 @@
 -- ============================================================================
--- StateBank Database Schema
+-- RiverStoneUnion Database Schema
 -- File: 001_schema.sql
--- Description: Full banking schema for StateBank application.
+-- Description: Full banking schema for RiverStoneUnion application.
 --              Creates all core tables: profiles, bank_accounts, transactions,
 --              pov_codes, transaction_log, beneficiaries, bill_payees,
 --              scheduled_transactions, loans, loan_payments, support_tickets,

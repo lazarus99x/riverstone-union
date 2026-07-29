@@ -1,5 +1,5 @@
 -- ============================================================================
--- StateBank Row-Level Security (RLS) Policies
+-- RiverStoneUnion Row-Level Security (RLS) Policies
 -- File: 002_rls.sql
 -- Description: Enables RLS on all tables and creates security policies.
 --              Users can only access their own data. Admins (via admin_profiles)

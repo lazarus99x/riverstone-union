@@ -1,4 +1,4 @@
-export const APP_NAME = "StateBank";
+export const APP_NAME = "RiverStoneUnion";
 export const APP_DESCRIPTION =
   "Premium digital banking with military-grade security. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.";
 
@@ -18,8 +18,8 @@ export const ROUTES = {
 
 export const COMPANY = {
   NAME: APP_NAME,
-  LEGAL_NAME: "StateBank Financial Services, Inc.",
-  SUPPORT_EMAIL: "support@statebank.com",
+  LEGAL_NAME: "RiverStone Union Financial Services, Inc.",
+  SUPPORT_EMAIL: "support@riverstoneunion.com",
   SUPPORT_PHONE: "+1 (800) 555-BANK",
   ADDRESS: "100 Financial District Blvd, New York, NY 10004",
 } as const;

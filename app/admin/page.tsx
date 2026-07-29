@@ -97,7 +97,7 @@ export default function AdminPage() {
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="admin@statebank.com"
+                placeholder="admin@riverstoneunion.com"
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/30 focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
@@ -180,7 +180,7 @@ export default function AdminPage() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="min-w-0">
           <h1 className="text-xl sm:text-3xl font-bold text-foreground">Admin Panel</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Full control over StateBank operations</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Full control over RiverStoneUnion operations</p>
         </div>
         <button onClick={() => { createClient().auth.signOut().then(() => { setAuthState("login"); }); }}
           className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/50 hover:bg-white/5 hover:text-white/80 transition-colors shrink-0">
@@ -1257,7 +1257,7 @@ function SettingsTab() {
           </div>
           <div>
             <label className="text-sm font-medium text-foreground block mb-1">Bank Name</label>
-            <Input data-setting="bank_name" defaultValue={settings.bank_name ?? "StateBank"} className="bg-background border-border max-w-xs" />
+            <Input data-setting="bank_name" defaultValue={settings.bank_name ?? "RiverStoneUnion"} className="bg-background border-border max-w-xs" />
           </div>
           <div>
             <label className="text-sm font-medium text-foreground block mb-1">Routing Number</label>
@@ -1268,7 +1268,7 @@ function SettingsTab() {
     pov_probability: (document.querySelector('[data-setting="pov_probability"]') as HTMLInputElement)?.value || 80,
     daily_transfer_limit: (document.querySelector('[data-setting="daily_transfer_limit"]') as HTMLInputElement)?.value || 10000,
     default_interest_rate: (document.querySelector('[data-setting="default_interest_rate"]') as HTMLInputElement)?.value || 4.50,
-    bank_name: (document.querySelector('[data-setting="bank_name"]') as HTMLInputElement)?.value || "StateBank",
+    bank_name: (document.querySelector('[data-setting="bank_name"]') as HTMLInputElement)?.value || "RiverStoneUnion",
     routing_number: (document.querySelector('[data-setting="routing_number"]') as HTMLInputElement)?.value || "021000021",
   };
   const res = await fetch("/api/admin-action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "save_settings", data: { settings } }) });

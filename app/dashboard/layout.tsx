@@ -44,7 +44,7 @@ export default function DashboardLayout({
 
     const checkWelcome = async () => {
       try {
-        const alreadyShown = localStorage.getItem("statebank_welcome_shown");
+        const alreadyShown = localStorage.getItem("riverstoneunion_welcome_shown");
         if (alreadyShown === "true") {
           setWelcomeChecked(true);
           return;

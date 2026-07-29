@@ -71,7 +71,7 @@ export default function SignInPage() {
               Welcome back
             </h1>
             <p className="mt-2 text-sm text-text-secondary">
-              Sign in to your StateBank account
+              Sign in to your RiverStoneUnion account
             </p>
           </div>
 

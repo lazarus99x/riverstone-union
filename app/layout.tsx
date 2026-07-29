@@ -28,34 +28,34 @@ const jetbrainsMono = JetBrains_Mono({
 /* ── Metadata ─────────────────────────────────────────────── */
 export const metadata: Metadata = {
   title: {
-    default: "StateBank — Premium Digital Banking",
-    template: "%s | StateBank",
+    default: "RiverStoneUnion — Premium Digital Banking",
+    template: "%s | RiverStoneUnion",
   },
   description:
-    "Experience premium digital banking with StateBank. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
+    "Experience premium digital banking with RiverStoneUnion. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
   keywords: [
-    "StateBank",
+    "RiverStoneUnion",
     "digital banking",
     "online banking",
     "premium banking",
     "multi-currency",
     "secure banking",
   ],
-  authors: [{ name: "StateBank" }],
-  creator: "StateBank",
+  authors: [{ name: "RiverStoneUnion" }],
+  creator: "RiverStoneUnion",
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "StateBank",
-    title: "StateBank — Premium Digital Banking",
+    siteName: "RiverStoneUnion",
+    title: "RiverStoneUnion — Premium Digital Banking",
     description:
-      "Experience premium digital banking with StateBank. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
+      "Experience premium digital banking with RiverStoneUnion. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "StateBank — Premium Digital Banking",
+    title: "RiverStoneUnion — Premium Digital Banking",
     description:
-      "Experience premium digital banking with StateBank. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
+      "Experience premium digital banking with RiverStoneUnion. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
   },
   icons: {
     icon: "/favicon.ico",

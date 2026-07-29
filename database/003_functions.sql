@@ -1,5 +1,5 @@
 -- ============================================================================
--- StateBank Database Functions
+-- RiverStoneUnion Database Functions
 -- File: 003_functions.sql
 -- Description: Core business logic functions for the banking system.
 -- Includes:

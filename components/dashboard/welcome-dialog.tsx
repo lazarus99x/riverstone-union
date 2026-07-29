@@ -48,7 +48,7 @@ export default function WelcomeDialog({
   };
 
   const handleGoToDashboard = () => {
-    localStorage.setItem("statebank_welcome_shown", "true");
+    localStorage.setItem("riverstoneunion_welcome_shown", "true");
     onOpenChange(false);
   };
 
@@ -103,7 +103,7 @@ export default function WelcomeDialog({
                     </span>
                   </div>
                   <h2 className="mt-2 font-display text-xl sm:text-2xl font-bold text-text-primary">
-                    Welcome to StateBank
+                    Welcome to RiverStoneUnion
                   </h2>
                   <p className="mt-1 text-xs sm:text-sm text-text-secondary">
                     Your premium banking account is ready. Here are your details.

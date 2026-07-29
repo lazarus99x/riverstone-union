@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ── StateBank Design Token System ─────────────────────────── */
+/* ── RiverStoneUnion Design Token System ─────────────────────────── */
 @theme inline {
   /* ── Fonts ────────────────────────────────────────────────── */
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
