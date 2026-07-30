@@ -17,7 +17,7 @@ export default function SmartsuppChat() {
     script.type = "text/javascript";
     script.innerHTML = `
 var _smartsupp = _smartsupp || {};
-_smartsupp.key = 'e41c338e1df8e4e96c104f509d819ae5360b73c3';
+_smartsupp.key = '8edb3e4edde733a14459fc28c30fcabcc7d81811';
 window.smartsupp||(function(d) {
   var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
   s=d.getElementsByTagName('script')[0];c=d.createElement('script');
@@ -26,6 +26,11 @@ window.smartsupp||(function(d) {
 })(document);
 `;
     document.head.appendChild(script);
+
+    // noscript fallback
+    const noscript = document.createElement("noscript");
+    noscript.innerHTML = 'Powered by <a href="https://www.smartsupp.com" target="_blank">Smartsupp</a>';
+    document.head.appendChild(noscript);
   }, [pathname]);
 
   return null;
