@@ -2,11 +2,18 @@ export const APP_NAME = "Riverstone Union";
 export const APP_DESCRIPTION =
   "Premium digital banking with military-grade security. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.";
 
-export const APP_URL =
+const rawUrl =
   process.env.NEXT_PUBLIC_APP_URL ||
+  // Vercel's auto-injected server env (available in API routes)
+  process.env.VERCEL_URL ||
   process.env.NEXT_PUBLIC_VERCEL_URL ||
   process.env.NEXT_PUBLIC_SITE_URL ||
-  "http://localhost:3000";
+  "localhost:3000";
+
+// Ensure the URL has a protocol — Vercel env vars omit it
+export const APP_URL = rawUrl.startsWith("http")
+  ? rawUrl
+  : `https://${rawUrl}`;
 
 export const ROUTES = {
   HOME: "/",

@@ -42,6 +42,7 @@ export default function ResetPasswordPage() {
    */
   useEffect(() => {
     const hash = window.location.hash;
+    console.log("[ResetPassword] URL hash received:", hash ? hash.substring(0, 80) + "..." : "none");
     if (!hash) {
       // No hash — the user may have navigated here directly without a token
       setError("Invalid or expired reset link. Please request a new one.");

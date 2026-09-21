@@ -26,6 +26,8 @@ export async function POST(request: Request) {
     }
 
     const redirectTo = `${APP_URL}/reset-password`;
+    console.log(`[ForgotPassword] Sending reset email to: ${email.trim().toLowerCase()}`);
+    console.log(`[ForgotPassword] Redirect URL: ${redirectTo}`);
 
     // Send the password reset email via Supabase admin API
     const { error } = await adminClient.auth.resetPasswordForEmail(
