@@ -672,12 +672,18 @@ function UsersTab() {
                           <CheckCircle className="w-3 h-3 mr-1" /> Activate
                         </Button>
                         <Button size="sm" variant="destructive" className="text-xs" onClick={async () => {
-                          if (!confirm("Are you sure you want to close this user's accounts?")) return;
-                          const res = await fetch("/api/admin-action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "delete", userId: u.id }) });
+                          if (!confirm("PERMANENTLY DELETE this user and all their data? This cannot be undone.")) return;
+                          if (!confirm("Are you sure? All transactions, accounts, and profile data will be lost forever.")) return;
+                          const res = await fetch("/api/admin-delete-user", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId: u.id }) });
                           const d = await res.json();
-                          toast.success(d.message || "Accounts closed");
+                          if (d.success) {
+                            toast.success(d.message || "User deleted");
+                            setUsers(prev => prev.filter(usr => usr.id !== u.id));
+                          } else {
+                            toast.error(d.error || "Delete failed");
+                          }
                         }}>
-                          <Trash2 className="w-3 h-3 mr-1" /> Close Accounts
+                          <Trash2 className="w-3 h-3 mr-1" /> Delete User
                         </Button>
                         <Button size="sm" variant="outline" className="text-xs" onClick={async () => {
                           const res = await fetch("/api/admin-action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "assign_number", userId: u.id }) });
