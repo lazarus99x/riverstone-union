@@ -44,8 +44,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "@types/nodemailer": "^6.9.17"
+    "typescript": "^5"
   },
   "optionalDependencies": {
     "lightningcss-linux-x64-gnu": "^1.30.0"
