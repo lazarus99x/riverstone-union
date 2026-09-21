@@ -72,16 +72,20 @@ export default function DashboardTopNav({ onMenuClick }: DashboardTopNavProps) {
       return;
     }
     const supabase = createClient();
-    supabase
-      .from("profiles")
-      .select("avatar_url")
-      .eq("user_id", user.id)
-      .single()
-      .then(({ data }) => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("user_id", user.id)
+          .single();
         if (data?.avatar_url) setAvatarUrl(data.avatar_url);
-      })
-      .catch(() => {})
-      .finally(() => setAvatarLoading(false));
+      } catch {
+        // silent
+      } finally {
+        setAvatarLoading(false);
+      }
+    })();
   }, [user?.id]);
 
   const currentLabel =
