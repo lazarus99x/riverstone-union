@@ -5,6 +5,8 @@ const publicRoutes = [
   "/",
   "/sign-in",
   "/sign-up",
+  "/forgot-password",
+  "/reset-password",
 ];
 
 export async function updateSession(request: NextRequest) {
@@ -47,6 +49,7 @@ export async function updateSession(request: NextRequest) {
   );
   const isNextInternal =
     pathname.startsWith("/_next") || pathname === "/favicon.ico";
+  const isApiRoute = pathname.startsWith("/api/");
 
   // --- Admin route — let page handle auth ---
   if (pathname.startsWith("/admin")) {
@@ -54,7 +57,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // --- General auth protection for all other private routes ---
-  if (!user && !isPublic && !isNextInternal) {
+  if (!user && !isPublic && !isNextInternal && !isApiRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
     return NextResponse.redirect(url);
