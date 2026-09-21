@@ -38,16 +38,21 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
     const supabase = createClient();
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${APP_URL}/reset-password`,
-    });
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${APP_URL}/reset-password`,
+      });
 
-    setIsLoading(false);
-
-    if (error) {
-      toast.error(error.message);
-    } else {
-      setEmailSent(true);
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setEmailSent(true);
+      }
+    } catch (err) {
+      console.error("Forgot password error:", err);
+      toast.error("Something went wrong. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
