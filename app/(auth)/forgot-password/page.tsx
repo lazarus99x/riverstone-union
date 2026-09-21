@@ -5,15 +5,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Building2, Loader2, ArrowLeft, Mail, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import { createClient } from "@/utils/supabase/client";
-import { APP_URL } from "@/lib/constants";
 
 /**
  * ForgotPasswordPage
- * Purpose: Allows users to request a password reset email. User enters their
- * email address, and Supabase auth sends a reset link. The link redirects to
- * /reset-password with a recovery token in the URL hash fragment.
- * This page replaces the dead "Forgot password?" link on the sign-in page.
+ * Purpose: Allows users to request a password reset email. Submits the email
+ * to a server API route that handles the Supabase admin call — more reliable
+ * than the client-side Supabase auth call on production.
  */
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -22,10 +19,8 @@ export default function ForgotPasswordPage() {
 
   /**
    * handleSubmit
-   * Purpose: Sends a password reset email via Supabase auth API.
-   * Uses the configured APP_URL as the redirect target so the recovery link
-   * lands on our reset-password page where the token is processed.
-   * Input: email address from form
+   * Purpose: POSTs the email to /api/forgot-password which uses the Supabase
+   * admin client to send the reset email server-side.
    * Output: shows success state or error toast
    */
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,21 +31,24 @@ export default function ForgotPasswordPage() {
     }
 
     setIsLoading(true);
-    const supabase = createClient();
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${APP_URL}/reset-password`,
+      const res = await fetch("/api/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
 
-      if (error) {
-        toast.error(error.message);
+      const data = await res.json();
+
+      if (!data.success) {
+        toast.error(data.error || "Failed to send reset email");
       } else {
         setEmailSent(true);
       }
     } catch (err) {
-      console.error("Forgot password error:", err);
-      toast.error("Something went wrong. Please try again later.");
+      console.error("Forgot password request failed:", err);
+      toast.error("Network error. Please try again.");
     } finally {
       setIsLoading(false);
     }
