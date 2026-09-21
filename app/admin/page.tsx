@@ -549,8 +549,12 @@ function UsersTab() {
   const [withdrawBackdate, setWithdrawBackdate] = useState(false);
   const [withdrawDate, setWithdrawDate] = useState(new Date().toISOString().split('T')[0]);
   const [resetUserId, setResetUserId] = useState<string | null>(null);
-  const [resetResult, setResetResult] = useState<{ resetLink?: string; emailSent?: boolean; message?: string } | null>(null);
+  const [resetResult, setResetResult] = useState<{ resetLink?: string; emailSent?: boolean; message?: string; mode?: string } | null>(null);
   const [isResetting, setIsResetting] = useState(false);
+  const [resetMode, setResetMode] = useState<"email" | "manual">("email");
+  const [manualPassword, setManualPassword] = useState("");
+  const [manualConfirm, setManualConfirm] = useState("");
+  const [showManualPw, setShowManualPw] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -823,19 +827,105 @@ function UsersTab() {
       )}
 
       {/* Reset Password Confirmation Dialog */}
-      <AlertDialog open={resetUserId !== null} onOpenChange={(open) => { if (!open) { setResetUserId(null); setResetResult(null); } }}>
+      <AlertDialog open={resetUserId !== null} onOpenChange={(open) => { if (!open) { setResetUserId(null); setResetResult(null); setResetMode("email"); setManualPassword(""); setManualConfirm(""); } }}>
         <AlertDialogContent className="bg-[#0b1120] border border-white/10 text-white max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white">
-              {resetResult?.resetLink ? "Recovery Link Ready" : "Reset User Password?"}
+              {resetResult?.mode === "manual"
+                ? "Password Set Successfully"
+                : resetResult?.resetLink
+                ? "Recovery Link Ready"
+                : "Reset User Password"}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-white/40">
-              {resetResult?.resetLink
+              {resetResult?.mode === "manual"
+                ? "The user's password has been changed. Let them know their new password."
+                : resetResult?.resetLink
                 ? "Share this link with the user. They can use it to set a new password."
-                : "This will send a password reset email to the user. They will need to check their email and follow the link to set a new password."}
+                : resetMode === "manual"
+                ? "Enter a new password for this user. They can change it later from their settings."
+                : "Send a password reset email to the user. They will need to check their email and follow the link."}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
+          {/* ── Mode toggle (before action) ── */}
+          {!resetResult ? (
+            <div className="flex gap-2 mb-2">
+              <button
+                onClick={() => setResetMode("email")}
+                className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
+                  resetMode === "email"
+                    ? "bg-amber-600 text-white"
+                    : "bg-white/5 text-white/50 hover:bg-white/10"
+                }`}
+              >
+                Send Email
+              </button>
+              <button
+                onClick={() => setResetMode("manual")}
+                className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
+                  resetMode === "manual"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white/5 text-white/50 hover:bg-white/10"
+                }`}
+              >
+                Set Manually
+              </button>
+            </div>
+          ) : null}
+
+          {/* ── Manual password inputs ── */}
+          {!resetResult && resetMode === "manual" ? (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-white/60 mb-1 block">New Password</label>
+                <div className="relative">
+                  <input
+                    type={showManualPw ? "text" : "password"}
+                    value={manualPassword}
+                    onChange={e => setManualPassword(e.target.value)}
+                    placeholder="Min 6 characters"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 pr-9 text-sm text-white placeholder:text-white/30 focus:border-blue-500/50 focus:outline-none"
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowManualPw(!showManualPw)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"
+                  >
+                    {showManualPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-white/60 mb-1 block">Confirm Password</label>
+                <div className="relative">
+                  <input
+                    type={showManualPw ? "text" : "password"}
+                    value={manualConfirm}
+                    onChange={e => setManualConfirm(e.target.value)}
+                    placeholder="Re-enter new password"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 pr-9 text-sm text-white placeholder:text-white/30 focus:border-blue-500/50 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowManualPw(!showManualPw)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"
+                  >
+                    {showManualPw ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              </div>
+              {manualPassword && manualConfirm && manualPassword !== manualConfirm ? (
+                <p className="text-xs text-red-400">Passwords do not match</p>
+              ) : null}
+              {manualPassword && manualPassword.length < 6 ? (
+                <p className="text-xs text-amber-400">Minimum 6 characters</p>
+              ) : null}
+            </div>
+          ) : null}
+
+          {/* ── Recovery link result ── */}
           {resetResult?.resetLink ? (
             <div className="space-y-3">
               <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
@@ -848,6 +938,15 @@ function UsersTab() {
             </div>
           ) : null}
 
+          {/* ── Manual result ── */}
+          {resetResult?.mode === "manual" ? (
+            <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-3">
+              <p className="text-xs text-green-400 font-medium">Password changed successfully</p>
+              <p className="text-xs text-white/50 mt-1">The user can sign in with their new password.</p>
+            </div>
+          ) : null}
+
+          {/* ── Email failure banner ── */}
           {resetResult?.emailSent === false && !resetResult?.resetLink ? (
             <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
               <p className="text-xs text-red-400">Email sending failed — check server logs.</p>
@@ -857,10 +956,11 @@ function UsersTab() {
           <AlertDialogFooter className="flex gap-2">
             <AlertDialogCancel
               className="bg-white/5 border-white/10 text-white hover:bg-white/10"
-              onClick={() => { setResetUserId(null); setResetResult(null); }}
+              onClick={() => { setResetUserId(null); setResetResult(null); setResetMode("email"); setManualPassword(""); setManualConfirm(""); }}
             >
-              {resetResult?.resetLink ? "Close" : "Cancel"}
+              {resetResult ? "Close" : "Cancel"}
             </AlertDialogCancel>
+
             {resetResult?.resetLink ? (
               <AlertDialogAction
                 className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -870,6 +970,34 @@ function UsersTab() {
                 }}
               >
                 Copy Link
+              </AlertDialogAction>
+            ) : resetResult?.mode === "manual" ? null : resetMode === "manual" ? (
+              <AlertDialogAction
+                disabled={isResetting || !manualPassword || manualPassword.length < 6 || manualPassword !== manualConfirm}
+                className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+                onClick={async () => {
+                  if (!resetUserId || !manualPassword) return;
+                  setIsResetting(true);
+                  try {
+                    const res = await fetch("/api/admin-reset-password", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ userId: resetUserId, newPassword: manualPassword }),
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      setResetResult(data);
+                    } else {
+                      toast.error(data.error || "Reset failed");
+                    }
+                  } catch (err) {
+                    toast.error("Network error");
+                  } finally {
+                    setIsResetting(false);
+                  }
+                }}
+              >
+                {isResetting ? "Setting..." : "Set Password"}
               </AlertDialogAction>
             ) : (
               <AlertDialogAction
@@ -886,7 +1014,6 @@ function UsersTab() {
                     });
                     const data = await res.json();
                     if (data.success) {
-                      // Show the link in dialog instead of just a toast
                       setResetResult(data);
                     } else {
                       toast.error(data.error || "Reset failed");

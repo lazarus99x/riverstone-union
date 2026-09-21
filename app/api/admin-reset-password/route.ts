@@ -4,16 +4,19 @@ import { APP_URL } from "@/lib/constants";
 
 /**
  * POST /api/admin-reset-password
- * Purpose: Admin-triggered password reset for any user. Two strategies:
+ * Purpose: Admin-triggered password reset for any user. Three modes:
  *   1. Send a Supabase reset email (like the forgot-password flow)
  *   2. Generate a direct recovery link the admin can share via support chat
+ *   3. Manual password set — admin provides a new password directly
  *
- * Input:  { userId: string } — the user's profile UUID (u.id from admin table)
+ * Input:  { userId: string, newPassword?: string }
+ *         When newPassword is provided, the password is set directly on the
+ *         auth user (no email/link needed).
  * Output: { success, message, resetLink? }
  */
 export async function POST(request: Request) {
   try {
-    const { userId } = await request.json();
+    const { userId, newPassword } = await request.json();
 
     if (!userId || typeof userId !== "string") {
       return NextResponse.json(
@@ -40,8 +43,42 @@ export async function POST(request: Request) {
     const authUserId = profile.user_id;
     const redirectTo = `${APP_URL}/reset-password`;
 
+    // ── Manual password set mode ──────────────────────────────
+    if (newPassword) {
+      if (typeof newPassword !== "string" || newPassword.length < 6) {
+        return NextResponse.json(
+          { success: false, error: "Password must be at least 6 characters" },
+          { status: 400 }
+        );
+      }
+
+      console.log(
+        `[AdminResetPassword] Manually setting password for ${userEmail} (auth: ${authUserId})`
+      );
+
+      const { error: updateError } = await adminClient.auth.admin.updateUser(
+        authUserId,
+        { password: newPassword }
+      );
+
+      if (updateError) {
+        console.error("[AdminResetPassword] Manual password set failed:", updateError.message);
+        return NextResponse.json({
+          success: false,
+          error: `Failed to set password: ${updateError.message}`,
+        });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: `Password manually set for ${userEmail}`,
+        mode: "manual",
+      });
+    }
+
+    // ── Email + link mode (existing flow) ─────────────────────
     console.log(
-      `[AdminResetPassword] Resetting password for ${userEmail} (auth: ${authUserId})`
+      `[AdminResetPassword] Sending reset email to ${userEmail} (auth: ${authUserId})`
     );
 
     // Strategy 1: Send the reset email via Supabase
