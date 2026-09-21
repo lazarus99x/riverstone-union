@@ -11,15 +11,31 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Users, Building2, ArrowUpDown, Download, Upload, DollarSign, Shield, Headphones, Settings,
   Search, CheckCircle, XCircle, Clock, Ban, Trash2, Key, ChevronDown, ChevronUp,
-  TrendingUp, BarChart3, FileText, Wallet, RefreshCw, MessageSquare, Plus, Lock, Eye, EyeOff, Loader2
+  TrendingUp, BarChart3, FileText, Wallet, RefreshCw, MessageSquare, Plus, Lock, Eye, EyeOff, Loader2,
+  UserPlus, Image
 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
+import { CreateUserDialog } from "@/components/admin/create-user-dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function AdminPage() {
   const router = useRouter();
   const [authState, setAuthState] = useState<"loading" | "login" | "denied" | "admin">("loading");
   const [activeTab, setActiveTab] = useState("overview");
+  const [adminAvatar, setAdminAvatar] = useState<string | null>(null);
+  const [adminName, setAdminName] = useState("Admin");
 
   // Admin login form
   const [email, setEmail] = useState("");
@@ -30,6 +46,24 @@ export default function AdminPage() {
   useEffect(() => {
     checkAdminAccess();
   }, []);
+
+  // Re-fetch admin profile when tab switches (avatar may have been updated in settings)
+  useEffect(() => {
+    if (authState !== "admin") return;
+    const fetchProfile = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("avatar_url, full_name")
+        .eq("user_id", user.id)
+        .single();
+      if (profile?.avatar_url) setAdminAvatar(profile.avatar_url);
+      if (profile?.full_name) setAdminName(profile.full_name);
+    };
+    fetchProfile();
+  }, [activeTab, authState]);
 
   async function checkAdminAccess() {
     const supabase = createClient();
@@ -46,6 +80,18 @@ export default function AdminPage() {
 
     if (data.isAdmin) {
       setAuthState("admin");
+      // Fetch admin's own profile for avatar display in header
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("avatar_url, full_name")
+          .eq("user_id", user.id)
+          .single();
+        if (profile?.avatar_url) setAdminAvatar(profile.avatar_url);
+        if (profile?.full_name) setAdminName(profile.full_name);
+      }
     } else {
       setAuthState("denied");
     }
@@ -102,7 +148,15 @@ export default function AdminPage() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-white/60">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-medium text-white/60">Password</label>
+                <a
+                  href="/forgot-password"
+                  className="text-xs font-medium text-blue-400 transition-colors hover:text-blue-300"
+                >
+                  Forgot password?
+                </a>
+              </div>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -180,13 +234,28 @@ export default function AdminPage() {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="min-w-0">
           <h1 className="text-xl sm:text-3xl font-bold text-foreground">Admin Panel</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Full control over RiverStoneUnion operations</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Full control over Riverstone Union operations</p>
         </div>
-        <button onClick={() => { createClient().auth.signOut().then(() => { setAuthState("login"); }); }}
+        <div className="flex items-center gap-3">
+          <Avatar className="h-9 w-9 rounded-lg ring-1 ring-white/10">
+            {adminAvatar ? (
+              <AvatarImage src={adminAvatar} alt={adminName} className="object-cover rounded-lg" />
+            ) : (
+              <AvatarFallback className="rounded-lg bg-blue-600/20 text-sm font-semibold text-blue-400">
+                {adminName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            )}
+          </Avatar>
+          <div className="hidden sm:block text-right">
+            <p className="text-sm font-medium text-white/90">{adminName}</p>
+            <p className="text-xs text-white/40">Administrator</p>
+          </div>
+          <button onClick={() => { createClient().auth.signOut().then(() => { setAuthState("login"); }); }}
           className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/50 hover:bg-white/5 hover:text-white/80 transition-colors shrink-0">
           Sign Out
         </button>
-      </div>
+          </div>
+        </div>
 
 <div className="flex flex-col md:flex-row gap-4">
         {/* Sidebar Navigation - hidden on mobile, visible on md+ */}
@@ -274,6 +343,7 @@ interface Profile {
   full_name: string | null;
   phone: string | null;
   kyc_status: string | null;
+  avatar_url: string | null;
   created_at: string | null;
 }
 
@@ -478,6 +548,7 @@ function UsersTab() {
   const [depositDate, setDepositDate] = useState(new Date().toISOString().split('T')[0]);
   const [withdrawBackdate, setWithdrawBackdate] = useState(false);
   const [withdrawDate, setWithdrawDate] = useState(new Date().toISOString().split('T')[0]);
+  const [resetUserId, setResetUserId] = useState<string | null>(null);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -511,9 +582,12 @@ function UsersTab() {
   return (
     <div className="space-y-4">
       <Card className="p-4 border-border bg-card">
-        <div className="flex items-center gap-2 mb-4">
-          <Search className="w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Search users by name or email..." value={search} onChange={e => setSearch(e.target.value)} className="bg-background border-border" />
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2 flex-1">
+            <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+            <Input placeholder="Search users by name or email..." value={search} onChange={e => setSearch(e.target.value)} className="bg-background border-border" />
+          </div>
+          <CreateUserDialog onUserCreated={fetchUsers} />
         </div>
       </Card>
 
@@ -529,8 +603,19 @@ function UsersTab() {
             <Card key={u.id} className="border-border bg-card overflow-hidden">
               <div className="p-4 flex items-center justify-between cursor-pointer" onClick={() => setExpanded(expanded === u.id ? null : u.id)}>
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center shrink-0">
-                    <Users className="w-5 h-5 text-blue-500" />
+                  <div className="relative">
+                    {u.avatar_url ? (
+                      <Avatar className="w-10 h-10 shrink-0">
+                        <AvatarImage src={u.avatar_url} alt={u.full_name || "User"} className="object-cover" />
+                        <AvatarFallback className="bg-blue-600/20 text-blue-500">
+                          <Users className="w-5 h-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5 text-blue-500" />
+                      </div>
+                    )}
                   </div>
                   <div className="min-w-0">
                     <p className="font-medium text-sm text-foreground">{u.full_name || "Unnamed"}</p>
@@ -571,9 +656,20 @@ function UsersTab() {
                         <Button size="sm" variant="destructive" className="text-xs" onClick={async () => {
                           const res = await fetch("/api/admin-action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "ban", userId: u.id }) });
                           const d = await res.json();
-                          toast.success(d.message || "Account frozen");
+                          if (d.success) {
+                            toast.success(d.message || "Account frozen");
+                            // Toggle to unfrozen state in UI
+                          } else toast.error(d.error);
                         }}>
                           <Ban className="w-3 h-3 mr-1" /> Freeze
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-xs text-green-500 border-green-500/30 hover:bg-green-500/10" onClick={async () => {
+                          const res = await fetch("/api/admin-action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "unban", userId: u.id }) });
+                          const d = await res.json();
+                          if (d.success) toast.success(d.message || "Account unfrozen");
+                          else toast.error(d.error);
+                        }}>
+                          <CheckCircle className="w-3 h-3 mr-1" /> Activate
                         </Button>
                         <Button size="sm" variant="destructive" className="text-xs" onClick={async () => {
                           if (!confirm("Are you sure you want to close this user's accounts?")) return;
@@ -594,8 +690,37 @@ function UsersTab() {
                         }}>
                           <Key className="w-3 h-3 mr-1" /> Assign #
                         </Button>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/gif,image/webp"
+                          id={`avatar-override-${u.id}`}
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const formData = new FormData();
+                            formData.append("file", file);
+                            formData.append("userId", u.id);
+                            formData.append("isAdminOverride", "true");
+                            const res = await fetch("/api/avatar-upload", { method: "POST", body: formData });
+                            const data = await res.json();
+                            if (data.success) {
+                              toast.success("Avatar updated for " + (u.full_name || "user"));
+                              setUsers(prev => prev.map(usr => usr.id === u.id ? { ...usr, avatar_url: data.avatarUrl } : usr));
+                            } else {
+                              toast.error(data.error || "Avatar upload failed");
+                            }
+                            e.target.value = "";
+                          }}
+                        />
+                        <Button size="sm" variant="outline" className="text-xs" onClick={() => document.getElementById(`avatar-override-${u.id}`)?.click()}>
+                          <Image className="w-3 h-3 mr-1" /> Avatar
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-xs text-amber-500 border-amber-500/30 hover:bg-amber-500/10" onClick={() => { setResetUserId(u.id); }}>
+                          <Key className="w-3 h-3 mr-1" /> Reset Pwd
+                        </Button>
                         <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs" onClick={async () => {
-                          const res = await fetch("/api/admin-action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "verify_kyc", userId: u.user_id }) });
+                          const res = await fetch("/api/admin-action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "verify_kyc", userId: u.id }) });
                           const d = await res.json();
                           toast.success(d.message || "KYC verified");
                         }}>
@@ -688,6 +813,42 @@ function UsersTab() {
           ))}
         </div>
       )}
+
+      {/* Reset Password Confirmation Dialog */}
+      <AlertDialog open={resetUserId !== null} onOpenChange={(open) => { if (!open) setResetUserId(null); }}>
+        <AlertDialogContent className="bg-[#0b1120] border border-white/10 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Reset User Password?</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/40">
+              This will send a password reset email to the user. They will need to
+              check their email and follow the link to set a new password.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+              onClick={async () => {
+                if (!resetUserId) return;
+                const res = await fetch("/api/admin-reset-password", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ userId: resetUserId }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                  toast.success(data.message);
+                } else {
+                  toast.error(data.error || "Reset failed");
+                }
+                setResetUserId(null);
+              }}
+            >
+              Send Reset Email
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -1211,6 +1372,14 @@ function SupportTab() {
 function SettingsTab() {
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<Record<string, any>>({});
+  // Admin profile state
+  const [profileFullName, setProfileFullName] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+  const [isProfileSaving, setIsProfileSaving] = useState(false);
+  const [emailChangePending, setEmailChangePending] = useState(false);
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState<string | null>(null);
+  const [isProfileAvatarUploading, setIsProfileAvatarUploading] = useState(false);
 
   const fetchSettings = useCallback(async () => {
     setLoading(true);
@@ -1229,6 +1398,92 @@ function SettingsTab() {
     fetchSettings();
   }, [fetchSettings]);
 
+  /**
+   * useEffect — fetch admin's profile data
+   * Purpose: Loads the current admin's profile (name, email, phone) into
+   * the profile form state so the admin can edit their own details.
+   */
+  useEffect(() => {
+    const fetchAdminProfile = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, email, phone, avatar_url")
+        .eq("user_id", user.id)
+        .single();
+
+      if (profile) {
+        setProfileFullName(profile.full_name || "");
+        setProfileEmail(profile.email || user.email || "");
+        setProfilePhone(profile.phone || "");
+        setProfileAvatarUrl(profile.avatar_url || null);
+      } else {
+        setProfileEmail(user.email || "");
+      }
+    };
+    fetchAdminProfile();
+  }, []);
+
+  /**
+   * handleSaveAdminProfile
+   * Purpose: Saves the admin's profile changes. Updates name and phone directly
+   * via the profiles table. For email changes, uses Supabase's built-in
+   * updateUser() which triggers a confirmation email to the new address —
+   * the email is only changed after the user clicks the confirmation link.
+   * Validates phone format before saving.
+   */
+  const handleSaveAdminProfile = async () => {
+    if (!profileFullName.trim()) {
+      toast.error("Full name is required");
+      return;
+    }
+
+    setIsProfileSaving(true);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setIsProfileSaving(false);
+      toast.error("Not authenticated");
+      return;
+    }
+
+    // Save name and phone to profiles table
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({
+        full_name: profileFullName.trim(),
+        phone: profilePhone.trim(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", user.id);
+
+    if (profileError) {
+      setIsProfileSaving(false);
+      toast.error("Failed to save profile: " + profileError.message);
+      return;
+    }
+
+    // If email changed, use Supabase's updateUser which sends confirmation
+    if (profileEmail !== user.email && profileEmail.trim()) {
+      const { error: emailError } = await supabase.auth.updateUser({
+        email: profileEmail.trim(),
+      });
+      if (emailError) {
+        toast.error("Email update failed: " + emailError.message);
+      } else {
+        setEmailChangePending(true);
+        toast.success("Confirmation email sent to " + profileEmail.trim());
+      }
+    } else {
+      toast.success("Profile saved successfully!");
+    }
+
+    setIsProfileSaving(false);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -1239,6 +1494,128 @@ function SettingsTab() {
 
   return (
     <div className="space-y-4 max-w-2xl">
+      {/* ── Admin Profile ── */}
+      <Card className="p-4 sm:p-6 border-border bg-card">
+        <div className="flex items-center gap-2 mb-4">
+          <Settings className="h-5 w-5 text-blue-400" />
+          <h3 className="text-lg font-semibold text-white">My Profile</h3>
+        </div>
+        <div className="space-y-4">
+          {/* Avatar */}
+          <div className="flex items-center gap-4">
+            <Avatar className="h-16 w-16 rounded-2xl">
+              {profileAvatarUrl ? (
+                <AvatarImage src={profileAvatarUrl} alt={profileFullName || "Admin"} className="object-cover" />
+              ) : (
+                <AvatarFallback className="rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-600/10 text-lg font-bold text-blue-400">
+                  {(profileFullName || "A").charAt(0).toUpperCase()}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                id="admin-avatar-upload"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setIsProfileAvatarUploading(true);
+                  const formData = new FormData();
+                  formData.append("file", file);
+                  const supabase = createClient();
+                  const { data: { user } } = await supabase.auth.getUser();
+                  formData.append("userId", user?.id || "");
+                  const res = await fetch("/api/avatar-upload", { method: "POST", body: formData });
+                  const data = await res.json();
+                  if (data.success) {
+                    setProfileAvatarUrl(data.avatarUrl);
+                    toast.success("Profile picture updated!");
+                  } else {
+                    toast.error(data.error || "Upload failed");
+                  }
+                  setIsProfileAvatarUploading(false);
+                  e.target.value = "";
+                }}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs border-white/10 text-white/80"
+                disabled={isProfileAvatarUploading}
+                onClick={() => document.getElementById("admin-avatar-upload")?.click()}
+              >
+                {isProfileAvatarUploading ? <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Uploading...</> : profileAvatarUrl ? "Change Photo" : "Upload Photo"}
+              </Button>
+              {profileAvatarUrl && (
+                <Button variant="ghost" size="sm" className="text-xs text-red-400 ml-1" onClick={async () => {
+                  const supabase = createClient();
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (!user) return;
+                  const { error } = await supabase.from("profiles").update({ avatar_url: null }).eq("user_id", user.id);
+                  if (error) toast.error(error.message);
+                  else { setProfileAvatarUrl(null); toast.success("Avatar removed"); }
+                }}>
+                  Remove
+                </Button>
+              )}
+              <p className="mt-1 text-[11px] text-white/40">JPEG, PNG, GIF, WebP. Max 2MB.</p>
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-white/60 block mb-1">Full Name</label>
+            <Input
+              value={profileFullName}
+              onChange={e => setProfileFullName(e.target.value)}
+              className="bg-white/5 border-white/10 text-white max-w-xs"
+              placeholder="Your full name"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-white/60 block mb-1">Email Address</label>
+            <div className="flex items-center gap-2">
+              <Input
+                value={profileEmail}
+                onChange={e => setProfileEmail(e.target.value)}
+                className="bg-white/5 border-white/10 text-white max-w-xs"
+                placeholder="admin@riverstoneunion.com"
+                type="email"
+              />
+              {emailChangePending && (
+                <span className="text-xs text-amber-400">Confirmation email sent — click the link to confirm</span>
+              )}
+            </div>
+            <p className="text-xs text-white/30 mt-1">Changing email requires confirmation via the new address</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-white/60 block mb-1">Phone Number</label>
+            <Input
+              value={profilePhone}
+              onChange={e => {
+                // Allow digits, spaces, +, -, parentheses only
+                const val = e.target.value.replace(/[^\d\s+\-()]/g, "");
+                setProfilePhone(val);
+              }}
+              className="bg-white/5 border-white/10 text-white max-w-xs"
+              placeholder="+1 (555) 123-4567"
+              type="tel"
+            />
+          </div>
+          <Button
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            disabled={isProfileSaving}
+            onClick={handleSaveAdminProfile}
+          >
+            {isProfileSaving ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+            ) : (
+              "Save Profile"
+            )}
+          </Button>
+        </div>
+      </Card>
+
       <Card className="p-4 sm:p-6 border-border bg-card">
         <h3 className="text-lg font-semibold mb-4">System Settings</h3>
         <div className="space-y-4">
@@ -1257,7 +1634,7 @@ function SettingsTab() {
           </div>
           <div>
             <label className="text-sm font-medium text-foreground block mb-1">Bank Name</label>
-            <Input data-setting="bank_name" defaultValue={settings.bank_name ?? "RiverStoneUnion"} className="bg-background border-border max-w-xs" />
+            <Input data-setting="bank_name" defaultValue={settings.bank_name ?? "Riverstone Union"} className="bg-background border-border max-w-xs" />
           </div>
           <div>
             <label className="text-sm font-medium text-foreground block mb-1">Routing Number</label>
@@ -1268,7 +1645,7 @@ function SettingsTab() {
     pov_probability: (document.querySelector('[data-setting="pov_probability"]') as HTMLInputElement)?.value || 80,
     daily_transfer_limit: (document.querySelector('[data-setting="daily_transfer_limit"]') as HTMLInputElement)?.value || 10000,
     default_interest_rate: (document.querySelector('[data-setting="default_interest_rate"]') as HTMLInputElement)?.value || 4.50,
-    bank_name: (document.querySelector('[data-setting="bank_name"]') as HTMLInputElement)?.value || "RiverStoneUnion",
+    bank_name: (document.querySelector('[data-setting="bank_name"]') as HTMLInputElement)?.value || "Riverstone Union",
     routing_number: (document.querySelector('[data-setting="routing_number"]') as HTMLInputElement)?.value || "021000021",
   };
   const res = await fetch("/api/admin-action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "save_settings", data: { settings } }) });

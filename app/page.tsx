@@ -96,7 +96,7 @@ const testimonials = [
     role: "Small Business Owner",
     avatar: "SC",
     content:
-      "RiverStoneUnion transformed how I manage my business finances. The POV security layer gives me peace of mind I never had with traditional banks.",
+      "Riverstone Union transformed how I manage my business finances. The POV security layer gives me peace of mind I never had with traditional banks.",
     rating: 5,
   },
   {
@@ -112,7 +112,7 @@ const testimonials = [
     role: "Enterprise CFO",
     avatar: "MS",
     content:
-      "We moved our entire company payroll to RiverStoneUnion. The business banking suite is comprehensive, and support is genuinely 24/7.",
+      "We moved our entire company payroll to Riverstone Union. The business banking suite is comprehensive, and support is genuinely 24/7.",
     rating: 5,
   },
 ];
@@ -177,7 +177,7 @@ export default function LandingPage() {
               <Building2 className="h-5 w-5 text-white" />
             </div>
             <span className="font-display text-xl font-bold tracking-tight text-text-primary">
-              River<span className="text-primary">Stone</span>Union
+              Riverstone<span className="text-primary"> Union</span>
             </span>
           </Link>
 
@@ -194,11 +194,11 @@ export default function LandingPage() {
             <span className="h-4 w-px bg-border-muted" />
             <span className="flex items-center gap-1.5 text-xs text-text-muted">
               <Phone className="h-3.5 w-3.5 text-primary" />
-              +1 (909) 703-3627
+              +1 (564) 222-6805
             </span>
             <span className="flex items-center gap-1.5 text-xs text-text-muted">
               <Building2 className="h-3.5 w-3.5 text-primary" />
-              Washington DC, USA
+              7555 N. Western Ave., Chicago, IL
             </span>
           </nav>
 
@@ -276,7 +276,7 @@ export default function LandingPage() {
                 variants={itemVariants}
                 className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary sm:text-xl"
               >
-                Secure, intelligent, and beautifully simple. RiverStoneUnion combines
+                Secure, intelligent, and beautifully simple. Riverstone Union combines
                 military-grade security with a seamless digital experience — so
                 you can focus on what matters most.
               </motion.p>
@@ -324,7 +324,7 @@ export default function LandingPage() {
               <div className="relative overflow-hidden rounded-2xl shadow-2xl shadow-primary/10">
                 <img
                   src={IMG.office}
-                  alt="RiverStoneUnion modern banking workspace"
+                  alt="Riverstone Union modern banking workspace"
                   className="w-full h-auto object-cover"
                   loading="eager"
                 />
@@ -343,7 +343,7 @@ export default function LandingPage() {
                   </div>
                   <div className="text-sm text-white">
                     <span className="font-semibold">2.4M+</span>{" "}
-                    <span className="text-white/70">trust RiverStoneUnion</span>
+                    <span className="text-white/70">trust Riverstone Union</span>
                   </div>
                 </div>
               </div>
@@ -415,7 +415,7 @@ export default function LandingPage() {
           <div className="relative z-10 mx-auto max-w-7xl">
             <FadeIn className="mb-16 text-center">
               <span className="mb-4 inline-block rounded-full border border-accent-gold/20 bg-accent-gold/5 px-3 py-1 text-xs font-medium text-accent-gold">
-                Why RiverStoneUnion
+                Why Riverstone Union
               </span>
               <h2 className="font-display text-3xl font-bold tracking-tight text-text-primary sm:text-4xl md:text-5xl">
                 Everything you need, nothing you don&apos;t
@@ -512,7 +512,7 @@ export default function LandingPage() {
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
                 Real stories from real customers who made the switch to
-                RiverStoneUnion.
+                Riverstone Union.
               </p>
             </FadeIn>
 
@@ -575,7 +575,7 @@ export default function LandingPage() {
                     Ready for premium banking?
                   </h2>
                   <p className="mx-auto mt-4 max-w-xl text-lg text-text-secondary">
-                    Join over 2 million customers who trust RiverStoneUnion with their
+                    Join over 2 million customers who trust Riverstone Union with their
                     financial future. No minimum balance, no surprises.
                   </p>
                   <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -611,7 +611,7 @@ export default function LandingPage() {
                   <Building2 className="h-4 w-4 text-white" />
                 </div>
                 <span className="font-display text-lg font-bold tracking-tight text-text-primary">
-                  River<span className="text-primary">Stone</span>Union
+                  Riverstone<span className="text-primary"> Union</span>
                 </span>
               </div>
               <p className="text-sm leading-relaxed text-text-muted">
@@ -691,16 +691,22 @@ export default function LandingPage() {
                 <li className="flex items-start gap-2">
                   <MapPin className="mt-0.5 h-4 w-4 text-primary shrink-0" />
                   <span className="text-sm text-text-muted">
-                    Washington DC, USA
+                    7555 N. Western Ave., Chicago, IL 60645
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <MapPin className="mt-0.5 h-4 w-4 text-primary shrink-0" />
+                  <span className="text-sm text-text-muted">
+                    1180 E. Higgins Rd., Schaumburg, IL
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Phone className="mt-0.5 h-4 w-4 text-primary shrink-0" />
                   <a
-                    href="tel:+19097033627"
+                    href="tel:+15642226805"
                     className="text-sm text-text-muted transition-colors hover:text-text-secondary"
                   >
-                    +1 (909) 703-3627
+                    +1 (564) 222-6805
                   </a>
                 </li>
                 <li className="flex items-start gap-2">
@@ -720,11 +726,11 @@ export default function LandingPage() {
             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
               <div className="flex flex-col items-center gap-1 sm:items-start">
                 <p className="text-xs text-text-muted">
-                  &copy; {new Date().getFullYear()} RiverStoneUnion. All rights
+                  &copy; {new Date().getFullYear()} Riverstone Union. All rights
                   reserved. Member FDIC. Equal Housing Lender.
                 </p>
                 <p className="text-xs text-text-muted">
-                  Washington DC, USA &nbsp;&bull;&nbsp; +1 (909) 703-3627
+                  7555 N. Western Ave., Chicago, IL 60645 &nbsp;&bull;&nbsp; +1 (564) 222-6805
                 </p>
               </div>
               <div className="flex gap-4 text-xs text-text-muted">

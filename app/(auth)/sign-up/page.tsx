@@ -839,7 +839,7 @@ export default function SignUpPage() {
           <p className="mt-6 text-center text-xs text-text-muted">
             <Lock className="mr-1 inline-block h-3 w-3" />
             Your information is encrypted and protected by 256-bit SSL security.
-            RiverStoneUnion will never share your data without your consent.
+            Riverstone Union will never share your data without your consent.
           </p>
         </motion.div>
       </div>

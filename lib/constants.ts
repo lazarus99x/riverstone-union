@@ -1,4 +1,4 @@
-export const APP_NAME = "RiverStoneUnion";
+export const APP_NAME = "Riverstone Union";
 export const APP_DESCRIPTION =
   "Premium digital banking with military-grade security. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.";
 
@@ -18,10 +18,10 @@ export const ROUTES = {
 
 export const COMPANY = {
   NAME: APP_NAME,
-  LEGAL_NAME: "RiverStone Union Financial Services, Inc.",
+  LEGAL_NAME: "Riverstone Union Financial Services, Inc.",
   SUPPORT_EMAIL: "support@riverstoneunion.com",
-  SUPPORT_PHONE: "+1 (800) 555-BANK",
-  ADDRESS: "100 Financial District Blvd, New York, NY 10004",
+  SUPPORT_PHONE: "+1 (564) 222-6805",
+  ADDRESS: "7555 N. Western Ave., Chicago, IL 60645 | 1180 E. Higgins Rd., Schaumburg, IL",
 } as const;
 
 export const LIMITS = {

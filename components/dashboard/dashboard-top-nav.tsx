@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUser, useClerk } from "@/lib/auth";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { createClient } from "@/utils/supabase/client";
 
 /* ── Breadcrumb map ─────────────────────────────────────────── */
 const breadcrumbMap: Record<string, string> = {
@@ -48,6 +50,8 @@ export default function DashboardTopNav({ onMenuClick }: DashboardTopNavProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<{ id: string; title: string; desc: string; time: string; unread: boolean }[]>([]);
   const [notifLoading, setNotifLoading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarLoading, setAvatarLoading] = useState(true);
 
   useEffect(() => {
     if (!showNotifications || notifLoading) return;
@@ -60,6 +64,25 @@ export default function DashboardTopNav({ onMenuClick }: DashboardTopNavProps) {
       .catch(() => {})
       .finally(() => setNotifLoading(false));
   }, [showNotifications]);
+
+  // Fetch avatar_url from profiles table
+  useEffect(() => {
+    if (!user?.id) {
+      setAvatarLoading(false);
+      return;
+    }
+    const supabase = createClient();
+    supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+      })
+      .catch(() => {})
+      .finally(() => setAvatarLoading(false));
+  }, [user?.id]);
 
   const currentLabel =
     breadcrumbMap[pathname] || pathname.split("/").pop()?.replace(/-/g, " ") || "Overview";
@@ -195,9 +218,15 @@ export default function DashboardTopNav({ onMenuClick }: DashboardTopNavProps) {
             onClick={() => setShowDropdown(!showDropdown)}
             className="flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-accent"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary ring-1 ring-primary/20">
-              {initials}
-            </div>
+            <Avatar className="h-8 w-8 shrink-0 ring-1 ring-primary/20">
+              {avatarUrl ? (
+                <AvatarImage src={avatarUrl} alt={user?.fullName || "User"} className="object-cover" />
+              ) : (
+                <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary text-[11px]">
+                  {initials}
+                </AvatarFallback>
+              )}
+            </Avatar>
             <span className="hidden text-sm font-medium text-text-primary md:block">
               {user?.firstName || "User"}
             </span>

@@ -111,7 +111,7 @@ export default function AccountsPage() {
             My Accounts
           </h1>
           <p className="mt-1 text-sm text-text-secondary">
-            Manage all your RiverStoneUnion accounts in one place.
+            Manage all your Riverstone Union accounts in one place.
           </p>
         </div>
         <div className="flex items-center gap-3">

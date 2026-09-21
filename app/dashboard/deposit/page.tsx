@@ -121,7 +121,7 @@ export default function DepositPage() {
                 Deposit Funds
               </h1>
               <p className="mt-1 text-sm text-text-secondary">
-                Add money to your RiverStoneUnion accounts.
+                Add money to your Riverstone Union accounts.
               </p>
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function DepositPage() {
               Deposit Funds
             </h1>
             <p className="mt-1 text-sm text-text-secondary">
-              Add money to your RiverStoneUnion accounts.
+              Add money to your Riverstone Union accounts.
             </p>
           </div>
         </div>
@@ -186,12 +186,12 @@ export default function DepositPage() {
                   Domestic Wire Transfer
                 </CardTitle>
                 <CardDescription>
-                  Use the details below to send a wire transfer to your RiverStoneUnion account.
+                  Use the details below to send a wire transfer to your Riverstone Union account.
                   Funds are typically available within 2-4 hours.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <CopyField label="Bank Name" value="RiverStone Union Financial Services, Inc." />
+                <CopyField label="Bank Name" value="Riverstone Union Financial Services, Inc." />
                 <CopyField label="Routing Number (ABA)" value="021000021" />
                 <CopyField label="Account Number" value={primaryAccount.account_number} />
                 <CopyField label="Account Name" value={primaryAccount.account_name} />
@@ -203,7 +203,7 @@ export default function DepositPage() {
                   <div>
                     <p className="text-xs font-medium text-text-primary">Important Note</p>
                     <p className="mt-0.5 text-xs text-text-muted leading-relaxed">
-                      Wire transfers may incur fees from your sending bank. RiverStoneUnion does not
+                      Wire transfers may incur fees from your sending bank. Riverstone Union does not
                       charge incoming wire fees. For international wires, please include SWIFT code.
                     </p>
                   </div>
@@ -228,7 +228,7 @@ export default function DepositPage() {
                   ACH Transfer Instructions
                 </CardTitle>
                 <CardDescription>
-                  Link your external bank account to RiverStoneUnion for seamless ACH transfers.
+                  Link your external bank account to Riverstone Union for seamless ACH transfers.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -253,7 +253,7 @@ export default function DepositPage() {
                       <p className="text-sm font-medium text-text-primary">Verify & Confirm</p>
                       <p className="mt-0.5 text-xs text-text-muted">
                         Check your external account for two small deposits (under $1.00).
-                        Enter the amounts in RiverStoneUnion to verify your account.
+                        Enter the amounts in Riverstone Union to verify your account.
                       </p>
                     </div>
                   </div>
@@ -300,7 +300,7 @@ export default function DepositPage() {
                     <div>
                       <p className="text-sm font-medium text-text-primary">Endorse the Check</p>
                       <p className="mt-0.5 text-xs text-text-muted">
-                        Sign the back of your check and write &quot;For Mobile Deposit Only at RiverStoneUnion&quot;
+                        Sign the back of your check and write &quot;For Mobile Deposit Only at Riverstone Union&quot;
                         below your signature.
                       </p>
                     </div>
@@ -312,7 +312,7 @@ export default function DepositPage() {
                     <div>
                       <p className="text-sm font-medium text-text-primary">Take Photos</p>
                       <p className="mt-0.5 text-xs text-text-muted">
-                        Using the RiverStoneUnion mobile app, take clear photos of the front and back
+                        Using the Riverstone Union mobile app, take clear photos of the front and back
                         of the check. Ensure good lighting and all corners are visible.
                       </p>
                     </div>
@@ -334,7 +334,7 @@ export default function DepositPage() {
                 <div className="flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
                   <Shield className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
                   <p className="text-xs text-text-secondary leading-relaxed">
-                    Mobile check deposit is currently available only through the RiverStoneUnion
+                    Mobile check deposit is currently available only through the Riverstone Union
                     mobile app. Download the app from the App Store or Google Play Store.
                   </p>
                 </div>

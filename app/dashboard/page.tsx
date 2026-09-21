@@ -69,7 +69,7 @@ export default function DashboardOverview() {
       <motion.div variants={itemVariants} className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight text-text-primary">
-            Welcome to RiverStoneUnion
+            Welcome to Riverstone Union
           </h1>
           <p className="mt-1 text-sm text-text-secondary">
             Your account is ready. Start by making a deposit or setting up your profile.

@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser, useClerk } from "@/lib/auth";
@@ -59,6 +60,11 @@ export default function SettingsPage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
+  // Avatar upload state
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
+  const [avatarUploadError, setAvatarUploadError] = useState<string | null>(null);
+
   // Password
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -81,7 +87,7 @@ export default function SettingsPage() {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .single();
 
       if (!error && data) {
@@ -89,6 +95,7 @@ export default function SettingsPage() {
         setEmail(data.email || user.primaryEmailAddress?.emailAddress || "");
         setPhone(data.phone || "");
         setAddress(data.address || "");
+        setAvatarUrl(data.avatar_url || null);
 
         if (data.linked_accounts && Array.isArray(data.linked_accounts)) {
           setLinkedAccounts(data.linked_accounts);
@@ -114,17 +121,14 @@ export default function SettingsPage() {
       const supabase = createClient();
       const { error } = await supabase
         .from("profiles")
-        .upsert(
-          {
-            id: user.id,
-            full_name: fullName,
-            email: email,
-            phone: phone,
-            address: address,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "id" }
-        );
+        .update({
+          full_name: fullName,
+          email: email,
+          phone: phone,
+          address: address,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", user.id);
 
       setIsSaving(false);
       if (error) {
@@ -135,6 +139,79 @@ export default function SettingsPage() {
     };
 
     fetchProfile();
+  };
+
+  /**
+   * handleAvatarUpload
+   * Purpose: Uploads a user-selected avatar file to Supabase Storage via
+   * the avatar-upload API. Validates file type/size client-side first,
+   * shows upload progress, and updates the avatar URL on success.
+   */
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Client-side validation
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      setAvatarUploadError("Invalid file type. Allowed: JPEG, PNG, GIF, WebP");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setAvatarUploadError("File too large. Max 2MB");
+      return;
+    }
+
+    setAvatarUploadError(null);
+    setIsAvatarUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("userId", user?.id || "");
+
+      const res = await fetch("/api/avatar-upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setAvatarUrl(data.avatarUrl);
+        toast.success("Profile picture updated!");
+      } else {
+        setAvatarUploadError(data.error || "Upload failed");
+        toast.error(data.error || "Upload failed");
+      }
+    } catch (err) {
+      setAvatarUploadError("Network error during upload");
+      toast.error("Network error during upload");
+    } finally {
+      setIsAvatarUploading(false);
+    }
+  };
+
+  /**
+   * handleRemoveAvatar
+   * Purpose: Removes the user's avatar by setting avatar_url to null in the
+   * profiles table. The stored file remains in the bucket but is orphaned,
+   * which is acceptable for this use case.
+   */
+  const handleRemoveAvatar = async () => {
+    if (!user?.id) return;
+    
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar_url: null, updated_at: new Date().toISOString() })
+      .eq("user_id", user.id);
+
+    if (error) {
+      toast.error("Failed to remove avatar: " + error.message);
+    } else {
+      setAvatarUrl(null);
+      toast.success("Avatar removed");
+    }
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -242,16 +319,56 @@ export default function SettingsPage() {
                   <CardContent className="space-y-5">
                     {/* Avatar */}
                     <div className="flex items-center gap-4">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-lg font-bold text-white shadow-lg">
-                        {initials}
+                      <div className="relative">
+                        <Avatar className="h-16 w-16 rounded-2xl shadow-lg">
+                          {avatarUrl ? (
+                            <AvatarImage src={avatarUrl} alt={fullName} className="object-cover" />
+                          ) : (
+                            <AvatarFallback className="rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-lg font-bold text-white">
+                              {initials}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
                       </div>
                       <div>
-                        <Button variant="outline" size="sm" className="text-xs">
-                          Change Photo
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/gif,image/webp"
+                          id="avatar-upload"
+                          className="hidden"
+                          onChange={handleAvatarUpload}
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          disabled={isAvatarUploading}
+                          onClick={() => document.getElementById("avatar-upload")?.click()}
+                        >
+                          {isAvatarUploading ? (
+                            <><Loader2 className="h-3 w-3 mr-1 animate-spin" /> Uploading...</>
+                          ) : avatarUrl ? (
+                            "Change Photo"
+                          ) : (
+                            "Upload Photo"
+                          )}
                         </Button>
+                        {avatarUrl && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs text-destructive ml-1"
+                            onClick={handleRemoveAvatar}
+                          >
+                            Remove
+                          </Button>
+                        )}
                         <p className="mt-1 text-[11px] text-text-muted">
-                          JPG, PNG or GIF. Max 2MB.
+                          JPEG, PNG, GIF or WebP. Max 2MB.
                         </p>
+                        {avatarUploadError && (
+                          <p className="mt-1 text-[11px] text-destructive">{avatarUploadError}</p>
+                        )}
                       </div>
                     </div>
 

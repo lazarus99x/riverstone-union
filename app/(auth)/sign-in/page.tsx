@@ -71,7 +71,7 @@ export default function SignInPage() {
               Welcome back
             </h1>
             <p className="mt-2 text-sm text-text-secondary">
-              Sign in to your RiverStoneUnion account
+              Sign in to your Riverstone Union account
             </p>
           </div>
 
@@ -108,7 +108,7 @@ export default function SignInPage() {
                     Password
                   </label>
                   <Link
-                    href="#"
+                    href="/forgot-password"
                     className="text-xs font-medium text-primary transition-colors hover:text-primary-light"
                   >
                     Forgot password?

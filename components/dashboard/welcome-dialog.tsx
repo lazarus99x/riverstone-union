@@ -103,7 +103,7 @@ export default function WelcomeDialog({
                     </span>
                   </div>
                   <h2 className="mt-2 font-display text-xl sm:text-2xl font-bold text-text-primary">
-                    Welcome to RiverStoneUnion
+                    Welcome to Riverstone Union
                   </h2>
                   <p className="mt-1 text-xs sm:text-sm text-text-secondary">
                     Your premium banking account is ready. Here are your details.

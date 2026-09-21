@@ -28,37 +28,38 @@ const jetbrainsMono = JetBrains_Mono({
 /* ── Metadata ─────────────────────────────────────────────── */
 export const metadata: Metadata = {
   title: {
-    default: "RiverStoneUnion — Premium Digital Banking",
-    template: "%s | RiverStoneUnion",
+    default: "Riverstone Union — Premium Digital Banking",
+    template: "%s | Riverstone Union",
   },
   description:
-    "Experience premium digital banking with RiverStoneUnion. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
+    "Experience premium digital banking with Riverstone Union. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
   keywords: [
-    "RiverStoneUnion",
+    "Riverstone Union",
     "digital banking",
     "online banking",
     "premium banking",
     "multi-currency",
     "secure banking",
   ],
-  authors: [{ name: "RiverStoneUnion" }],
-  creator: "RiverStoneUnion",
+  authors: [{ name: "Riverstone Union" }],
+  creator: "Riverstone Union",
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "RiverStoneUnion",
-    title: "RiverStoneUnion — Premium Digital Banking",
+    siteName: "Riverstone Union",
+    title: "Riverstone Union — Premium Digital Banking",
     description:
-      "Experience premium digital banking with RiverStoneUnion. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
+      "Experience premium digital banking with Riverstone Union. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RiverStoneUnion — Premium Digital Banking",
+    title: "Riverstone Union — Premium Digital Banking",
     description:
-      "Experience premium digital banking with RiverStoneUnion. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
+      "Experience premium digital banking with Riverstone Union. Secure accounts, intelligent transfers, multi-currency support, and 24/7 dedicated support.",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
   },
 };
 

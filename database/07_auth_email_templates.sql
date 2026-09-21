@@ -1,0 +1,165 @@
+-- ============================================================================
+-- Wintrust Bank Auth Configuration & Email Templates
+-- File: 07_auth_email_templates.sql
+-- Description: Documentation/config for Supabase Auth email templates and
+--              redirect URL settings. These are applied via the Supabase
+--              Dashboard (Auth > Email Templates & Authentication > Settings)
+--              or via the Management REST API for automated deployment.
+--
+-- NOTE: Supabase does not support setting email templates via raw SQL.
+--       This file documents the exact template content and redirect URLs
+--       that must be configured in the Supabase Dashboard for the auth
+--       flows (signup verification, password reset) to work correctly.
+--
+-- Required Supabase Auth Settings:
+--   1. Site URL: https://wintrustbank.com (or your deployed URL)
+--      Auth > Settings > Site URL
+--   2. Redirect URLs:
+--      Auth > Settings > Redirect URLs
+--      - https://wintrustbank.com/auth/callback
+--      - https://wintrustbank.com/reset-password
+--   3. Email templates (below)
+-- ============================================================================
+
+-- ============================================================================
+-- TEMPLATE 1: Confirm Signup (Email Verification)
+-- Used when a user registers a new account.
+-- ============================================================================
+-- Subject: Confirm your Wintrust Bank account
+--
+-- <!DOCTYPE html>
+-- <html>
+-- <head>
+--   <meta charset="utf-8">
+--   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+--   <style>
+--     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+--            background: #0b1120; margin: 0; padding: 0; }
+--     .container { max-width: 560px; margin: 0 auto; padding: 40px 24px; }
+--     .card { background: #1a2332; border: 1px solid rgba(255,255,255,0.08);
+--             border-radius: 16px; padding: 40px 32px; }
+--     .logo { text-align: center; margin-bottom: 28px; }
+--     .logo h1 { color: #ffffff; font-size: 22px; font-weight: 700; margin: 0;
+--                letter-spacing: -0.3px; }
+--     .logo span { color: #3b82f6; }
+--     h2 { color: #ffffff; font-size: 18px; font-weight: 600; margin: 0 0 8px 0; }
+--     p { color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.6;
+--         margin: 0 0 24px 0; }
+--     .button { display: inline-block; background: #3b82f6; color: #ffffff;
+--               text-decoration: none; font-weight: 600; font-size: 14px;
+--               padding: 14px 32px; border-radius: 12px; }
+--     .button:hover { background: #2563eb; }
+--     .footer { margin-top: 28px; text-align: center; }
+--     .footer p { font-size: 12px; color: rgba(255,255,255,0.3); margin: 4px 0; }
+--     .security-badge { display: inline-block; background: rgba(59,130,246,0.1);
+--                       color: #60a5fa; font-size: 11px; padding: 4px 12px;
+--                       border-radius: 20px; margin-top: 12px; }
+--   </style>
+-- </head>
+-- <body>
+--   <div class="container">
+--     <div class="card">
+--       <div class="logo">
+--         <h1>Wintrust <span>Bank</span></h1>
+--       </div>
+--
+--       <h2>Verify your email address</h2>
+--       <p>
+--         Thank you for opening an account with Wintrust Bank. To activate
+--         your account and start banking securely, please confirm your email
+--         address by clicking the button below.
+--       </p>
+--
+--       <p style="text-align:center;">
+--         <a href="{{ .ConfirmationURL }}" class="button">Confirm Account</a>
+--       </p>
+--
+--       <p>
+--         Or copy this link into your browser:<br>
+--         <span style="color: rgba(255,255,255,0.3); font-size: 12px; word-break: break-all;">
+--           {{ .ConfirmationURL }}
+--         </span>
+--       </p>
+--
+--       <p style="margin-top: 20px;">
+--         If you did not create a Wintrust Bank account, please disregard this email.
+--       </p>
+--
+--       <div class="footer">
+--         <div class="security-badge">🔒 Protected by POV Security</div>
+--         <p>Wintrust Bank Financial Services, Inc.</p>
+--         <p>7555 N. Western Ave., Chicago, IL 60645</p>
+--         <p>This is an automated message. Do not reply to this email.</p>
+--       </div>
+--     </div>
+--   </div>
+-- </body>
+-- </html>
+--
+-- ============================================================================
+-- TEMPLATE 2: Reset Password
+-- Used when a user requests a password reset via /forgot-password.
+-- ============================================================================
+-- Subject: Reset your Wintrust Bank password
+--
+-- <!DOCTYPE html>
+-- <html>
+-- <head>
+--   <meta charset="utf-8">
+--   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+--   <style>
+--     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+--            background: #0b1120; margin: 0; padding: 0; }
+--     .container { max-width: 560px; margin: 0 auto; padding: 40px 24px; }
+--     .card { background: #1a2332; border: 1px solid rgba(255,255,255,0.08);
+--             border-radius: 16px; padding: 40px 32px; }
+--     .logo { text-align: center; margin-bottom: 28px; }
+--     .logo h1 { color: #ffffff; font-size: 22px; font-weight: 700; margin: 0;
+--                letter-spacing: -0.3px; }
+--     .logo span { color: #3b82f6; }
+--     h2 { color: #ffffff; font-size: 18px; font-weight: 600; margin: 0 0 8px 0; }
+--     p { color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.6;
+--         margin: 0 0 24px 0; }
+--     .button { display: inline-block; background: #3b82f6; color: #ffffff;
+--               text-decoration: none; font-weight: 600; font-size: 14px;
+--               padding: 14px 32px; border-radius: 12px; }
+--     .footer { margin-top: 28px; padding-top: 20px; border-top: 1px solid
+--               rgba(255,255,255,0.06); text-align: center; }
+--     .footer p { font-size: 12px; color: rgba(255,255,255,0.3); margin: 4px 0; }
+--   </style>
+-- </head>
+-- <body>
+--   <div class="container">
+--     <div class="card">
+--       <div class="logo">
+--         <h1>Wintrust <span>Bank</span></h1>
+--       </div>
+--
+--       <h2>Reset your password</h2>
+--       <p>
+--         We received a request to reset the password for your Wintrust Bank
+--         account. If you made this request, click the button below to
+--         create a new password.
+--       </p>
+--
+--       <p style="text-align:center;">
+--         <a href="{{ .ConfirmationURL }}" class="button">Reset Password</a>
+--       </p>
+--
+--       <p>
+--         This link expires in 1 hour. If you did not request a password
+--         reset, no action is needed — your account remains secure.
+--       </p>
+--
+--       <div class="footer">
+--         <p>Wintrust Bank Financial Services, Inc.</p>
+--         <p>7555 N. Western Ave., Chicago, IL 60645</p>
+--         <p>This is an automated message. Do not reply to this email.</p>
+--       </div>
+--     </div>
+--   </div>
+-- </body>
+-- </html>
+-- ============================================================================
+-- Done — Copy these templates into Supabase Dashboard > Auth > Email Templates
+-- ============================================================================
