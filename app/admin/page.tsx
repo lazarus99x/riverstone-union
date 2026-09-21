@@ -549,6 +549,8 @@ function UsersTab() {
   const [withdrawBackdate, setWithdrawBackdate] = useState(false);
   const [withdrawDate, setWithdrawDate] = useState(new Date().toISOString().split('T')[0]);
   const [resetUserId, setResetUserId] = useState<string | null>(null);
+  const [resetResult, setResetResult] = useState<{ resetLink?: string; emailSent?: boolean; message?: string } | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -821,37 +823,86 @@ function UsersTab() {
       )}
 
       {/* Reset Password Confirmation Dialog */}
-      <AlertDialog open={resetUserId !== null} onOpenChange={(open) => { if (!open) setResetUserId(null); }}>
-        <AlertDialogContent className="bg-[#0b1120] border border-white/10 text-white">
+      <AlertDialog open={resetUserId !== null} onOpenChange={(open) => { if (!open) { setResetUserId(null); setResetResult(null); } }}>
+        <AlertDialogContent className="bg-[#0b1120] border border-white/10 text-white max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Reset User Password?</AlertDialogTitle>
+            <AlertDialogTitle className="text-white">
+              {resetResult?.resetLink ? "Recovery Link Ready" : "Reset User Password?"}
+            </AlertDialogTitle>
             <AlertDialogDescription className="text-white/40">
-              This will send a password reset email to the user. They will need to
-              check their email and follow the link to set a new password.
+              {resetResult?.resetLink
+                ? "Share this link with the user. They can use it to set a new password."
+                : "This will send a password reset email to the user. They will need to check their email and follow the link to set a new password."}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-amber-600 hover:bg-amber-700 text-white"
-              onClick={async () => {
-                if (!resetUserId) return;
-                const res = await fetch("/api/admin-reset-password", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ userId: resetUserId }),
-                });
-                const data = await res.json();
-                if (data.success) {
-                  toast.success(data.message);
-                } else {
-                  toast.error(data.error || "Reset failed");
-                }
-                setResetUserId(null);
-              }}
+
+          {resetResult?.resetLink ? (
+            <div className="space-y-3">
+              <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+                <p className="text-xs font-medium text-amber-400 mb-1">Recovery Link</p>
+                <p className="text-xs text-white/70 break-all font-mono select-all bg-black/20 p-2 rounded">
+                  {resetResult.resetLink}
+                </p>
+              </div>
+              <p className="text-xs text-white/30">Click &quot;Copy Link&quot; to share with the user via support.</p>
+            </div>
+          ) : null}
+
+          {resetResult?.emailSent === false && !resetResult?.resetLink ? (
+            <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
+              <p className="text-xs text-red-400">Email sending failed — check server logs.</p>
+            </div>
+          ) : null}
+
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel
+              className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+              onClick={() => { setResetUserId(null); setResetResult(null); }}
             >
-              Send Reset Email
-            </AlertDialogAction>
+              {resetResult?.resetLink ? "Close" : "Cancel"}
+            </AlertDialogCancel>
+            {resetResult?.resetLink ? (
+              <AlertDialogAction
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => {
+                  navigator.clipboard.writeText(resetResult.resetLink!);
+                  toast.success("Recovery link copied to clipboard");
+                }}
+              >
+                Copy Link
+              </AlertDialogAction>
+            ) : (
+              <AlertDialogAction
+                disabled={isResetting}
+                className="bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50"
+                onClick={async () => {
+                  if (!resetUserId) return;
+                  setIsResetting(true);
+                  try {
+                    const res = await fetch("/api/admin-reset-password", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ userId: resetUserId }),
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      // Show the link in dialog instead of just a toast
+                      setResetResult(data);
+                    } else {
+                      toast.error(data.error || "Reset failed");
+                      setResetUserId(null);
+                    }
+                  } catch (err) {
+                    toast.error("Network error");
+                    setResetUserId(null);
+                  } finally {
+                    setIsResetting(false);
+                  }
+                }}
+              >
+                {isResetting ? "Sending..." : "Send Reset Email"}
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
