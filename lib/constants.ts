@@ -31,8 +31,8 @@ export const COMPANY = {
   NAME: APP_NAME,
   LEGAL_NAME: "Riverstone Union Financial Services, Inc.",
   SUPPORT_EMAIL: "support@riverstoneunion.com",
-  SUPPORT_PHONE: "+1 (564) 222-6805",
-  ADDRESS: "7555 N. Western Ave., Chicago, IL 60645 | 1180 E. Higgins Rd., Schaumburg, IL",
+  SUPPORT_PHONE: "+9743832710",
+  ADDRESS: "1st Al Akaria Al Olaya Musa Ibn Nussair Street, Doha Saudi Arabia, IL",
 } as const;
 
 export const LIMITS = {
